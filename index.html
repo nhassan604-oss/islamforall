@@ -11,93 +11,38 @@ body {
   font-family: 'Segoe UI', sans-serif;
   background: linear-gradient(to bottom, #0a0a0a, #000);
   color: white;
-  scroll-behavior: smooth;
 }
 
-/* NAVBAR */
+/* NAV */
 nav {
   display: flex;
   justify-content: space-between;
   padding: 15px 25px;
-  background: rgba(0,0,0,0.9);
-  position: sticky;
-  top: 0;
+  background: #000;
 }
-
 nav h1 { color: gold; }
-nav a { color: white; margin-left: 15px; text-decoration: none; }
-
-/* HERO */
-.hero {
-  text-align: center;
-  padding: 90px 20px;
-  background: radial-gradient(circle, rgba(255,215,0,0.15), transparent);
-}
-
-.button {
-  background: gold;
-  color: black;
-  padding: 10px 25px;
-  border-radius: 20px;
-  margin-top: 20px;
-  cursor: pointer;
-}
 
 /* SECTION */
-.section { padding: 60px 20px; text-align: center; }
+.section { padding: 50px 20px; text-align: center; }
 
-/* CARDS */
-.cards {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 20px;
-}
-
-.card {
-  background: rgba(255,255,255,0.08);
-  padding: 25px;
-  border-radius: 15px;
-  width: 250px;
-  cursor: pointer;
-}
-
-.card h3 { color: gold; }
-
-/* SEARCH */
 .search input {
   padding: 10px;
   border-radius: 20px;
   border: none;
-  width: 250px;
+  width: 260px;
 }
 
-/* LIST BOX */
-.box {
-  max-width: 500px;
+/* HADITH LIST */
+.hadith-box {
+  max-width: 700px;
   margin: auto;
   text-align: left;
 }
 
-/* CHATBOT */
-.chatbot {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-}
-
-.chat-btn {
-  background: gold;
-  border: none;
-  padding: 14px;
-  border-radius: 50%;
-}
-
-.chatbox {
-  display: none;
-  background: #111;
+.hadith {
+  background: rgba(255,255,255,0.08);
   padding: 15px;
-  width: 260px;
+  margin: 10px 0;
   border-radius: 10px;
 }
 </style>
@@ -107,118 +52,54 @@ nav a { color: white; margin-left: 15px; text-decoration: none; }
 
 <nav>
   <h1>☪ Islamforall</h1>
-  <div>
-    <a href="#quran">Qur’an</a>
-    <a href="#hadith">Hadith</a>
-    <a href="#prayer">Prayer</a>
-  </div>
 </nav>
 
-<section class="hero">
-  <h2>Authentic Islamic Knowledge</h2>
-  <p>Qur’an • Hadith • Sunnah</p>
+<section class="section">
+  <h2>📚 Hadith Database</h2>
 
   <div class="search">
-    <input placeholder="Search..." onkeyup="search(this.value)">
+    <input placeholder="Search hadith..." onkeyup="searchHadith(this.value)">
   </div>
-</section>
 
-<section class="section">
-  <div class="cards" id="cards">
-    <div class="card"><h3>Qur’an</h3><p>Read verses</p></div>
-    <div class="card"><h3>Hadith</h3><p>Authentic sayings</p></div>
-    <div class="card"><h3>Prayer</h3><p>Learn Salah</p></div>
-  </div>
+  <div class="hadith-box" id="hadith-box"></div>
 </section>
-
-<!-- QURAN -->
-<section id="quran" class="section">
-  <h2>Qur’an Verses</h2>
-  <div class="box" id="quran-box"></div>
-  <div class="button" onclick="loadQuran()">Load Verses</div>
-</section>
-
-<!-- HADITH -->
-<section id="hadith" class="section">
-  <h2>Hadith</h2>
-  <div class="box">
-    <p>1. Actions are judged by intentions.</p>
-    <p>2. The best among you are those with best character.</p>
-    <p>3. Islam is built on five pillars.</p>
-  </div>
-</section>
-
-<!-- PRAYER -->
-<section id="prayer" class="section">
-  <h2>Prayer Guide</h2>
-  <div class="box">
-    <p>1. Make intention (niyyah)</p>
-    <p>2. Say Takbir</p>
-    <p>3. Recite Surah Al-Fatiha</p>
-    <p>4. Ruku (bowing)</p>
-    <p>5. Sujood (prostration)</p>
-    <p>6. Tashahhud</p>
-    <p>7. Salam</p>
-  </div>
-</section>
-
-<!-- CHATBOT -->
-<div class="chatbot">
-  <button class="chat-btn" onclick="toggleChat()">💬</button>
-  <div class="chatbox" id="chatbox">
-    <p id="chat-output">Ask something...</p>
-    <input id="chat-input" onkeydown="chat(event)" placeholder="Type...">
-  </div>
-</div>
 
 <script>
+
+/* HADITH DATABASE */
+let hadiths = [
+"Actions are judged by intentions. (Bukhari, Muslim)",
+"The best among you are those with the best character. (Bukhari)",
+"Islam is built upon five pillars. (Bukhari, Muslim)",
+"None of you truly believes until he loves for his brother what he loves for himself. (Bukhari, Muslim)",
+"Make things easy and do not make them difficult. (Bukhari)",
+"The strong person is not the one who can wrestle, but the one who controls anger. (Bukhari)",
+"Whoever believes in Allah and the Last Day should speak good or remain silent. (Bukhari, Muslim)",
+"Cleanliness is half of faith. (Muslim)",
+"Allah is gentle and loves gentleness. (Bukhari, Muslim)",
+"The most beloved deeds to Allah are those done regularly, even if small. (Bukhari)",
+"Paradise lies under the feet of mothers. (Ahmad)",
+"The best charity is that given in Ramadan. (Tirmidhi)",
+"Seek knowledge from cradle to grave. (Attributed)",
+"Smiling is charity. (Tirmidhi)",
+"Do not waste water even if at a flowing river. (Ibn Majah)"
+];
+
+/* LOAD */
+function loadHadith(list){
+  let box = document.getElementById("hadith-box");
+  box.innerHTML = list.map(h=>`<div class="hadith">${h}</div>`).join("");
+}
+
+loadHadith(hadiths);
+
 /* SEARCH */
-function search(val){
+function searchHadith(val){
   val = val.toLowerCase();
-  document.querySelectorAll(".card").forEach(c=>{
-    c.style.display = c.innerText.toLowerCase().includes(val) ? "block":"none";
-  });
+  let filtered = hadiths.filter(h=>h.toLowerCase().includes(val));
+  loadHadith(filtered);
 }
 
-/* QURAN DATA */
-function loadQuran(){
-  let data = [
-    "Indeed, Allah is with the patient. (2:153)",
-    "Allah does not burden a soul beyond capacity. (2:286)",
-    "So remember Me; I will remember you. (2:152)"
-  ];
-  let box = document.getElementById("quran-box");
-  box.innerHTML = data.map(v=>"<p>"+v+"</p>").join("");
-}
-
-/* CHATBOT */
-function toggleChat(){
-  let c = document.getElementById("chatbox");
-  c.style.display = c.style.display==="block"?"none":"block";
-}
-
-function chat(e){
-  if(e.key==="Enter"){
-    let v = document.getElementById("chat-input").value.toLowerCase();
-    let o = document.getElementById("chat-output");
-
-    if(v.includes("allah")){
-      o.innerText="Allah is One (Tawheed).";
-    }
-    else if(v.includes("prayer") || v.includes("salah")){
-      o.innerText="There are 5 daily prayers: Fajr, Dhuhr, Asr, Maghrib, Isha.";
-    }
-    else if(v.includes("quran")){
-      o.innerText="The Qur'an is the final revelation.";
-    }
-    else if(v.includes("hadith")){
-      o.innerText="Hadith are sayings of Prophet Muhammad ﷺ.";
-    }
-    else{
-      o.innerText="Answer coming soon (AI upgrade later).";
-    }
-  }
-}
 </script>
 
 </body>
